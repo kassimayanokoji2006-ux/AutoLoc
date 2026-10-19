@@ -2,6 +2,7 @@ services:
   - type: web
     name: autoloc
     runtime: python
+    plan: free
     buildCommand: bash build.sh
     startCommand: gunicorn autoloc.wsgi:application
     healthCheckPath: /
@@ -18,13 +19,9 @@ services:
         value: autoloc.onrender.com
       - key: CSRF_TRUSTED_ORIGINS
         value: https://autoloc.onrender.com
-      - key: MEDIA_ROOT
-        value: /var/data
-    disk:
-      name: autoloc-media
-      mountPath: /var/data
-      sizeGB: 1
+      # No persistent disk: uploads are temporary on the Free filesystem.
 databases:
   - name: autoloc-db
     databaseName: autoloc
     user: autoloc
+    plan: free

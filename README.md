@@ -53,15 +53,25 @@ La suite de tests utilise SQLite et ne requiert pas de service PostgreSQL. En pr
 
 ## Déploiement sur Render
 
-1. Poussez le projet sur un dépôt GitHub privé ou public.
-2. Créez une base PostgreSQL et un service Web Render depuis le dépôt (ou utilisez `render.yaml` comme point de départ).
-3. Configurez `DATABASE_URL` avec l'URL interne de la base PostgreSQL. Définissez `SECRET_KEY` comme secret Render, `DEBUG=False`, `ALLOWED_HOSTS` avec le domaine attribué et `CSRF_TRUSTED_ORIGINS` avec son origine HTTPS complète.
-4. Utilisez `build.sh` comme commande de build et `gunicorn autoloc.wsgi:application` comme commande de démarrage.
-5. Créez un compte de gestion avec `python manage.py createsuperuser` depuis une commande shell Render.
+Le fichier [`render.yaml`](./render.yaml) sélectionne l'offre gratuite pour le service Web et PostgreSQL, sans disque persistant. Pour essayer le déploiement :
 
-Les fichiers statiques sont servis par WhiteNoise. Les images téléversées sont stockées dans `media/` par défaut ; sur Render, un disque persistant doit être monté sur `/var/data` et `MEDIA_ROOT=/var/data` doit être défini pour conserver ces fichiers après redéploiement. Les médias sont servis par Django, ce qui convient à une démonstration de petite taille ; pour un trafic important, configurez un stockage d'objets adapté. Sans disque persistant, les images ajoutées en production ne sont pas garanties de survivre aux redéploiements.
+1. Envoyez le projet sur GitHub (`git add .`, `git commit -m "Prepare AutoLoc deployment"`, puis `git push`).
+2. Dans le tableau de bord Render, choisissez **New → Blueprint Instance**, reliez votre compte GitHub, sélectionnez le dépôt AutoLoc et appliquez le Blueprint trouvé dans `render.yaml`.
+3. Vérifiez avant de confirmer que Render propose bien les plans **Free** pour les deux services. Le Blueprint génère `SECRET_KEY`, définit `DEBUG=False`, configure les hôtes `autoloc.onrender.com`, relie `DATABASE_URL` à PostgreSQL et utilise `build.sh` pour installer les dépendances, collecter les fichiers statiques et appliquer les migrations. Gunicorn démarre l'application avec `gunicorn autoloc.wsgi:application`.
+4. Une fois le déploiement réussi, ouvrez l'URL `https://…onrender.com` affichée dans le tableau de bord.
 
-Vérifiez les tarifs, limites, règles de conservation et disponibilités actuels des services Render et PostgreSQL avant toute publication. Aucun déploiement n'est effectué par ce dépôt et aucun lien public n'est donc fourni.
+Les variables `ALLOWED_HOSTS` et `CSRF_TRUSTED_ORIGINS` du Blueprint ciblent `autoloc.onrender.com`. Si Render attribue un autre domaine, mettez ces deux valeurs à jour dans la configuration du service : `ALLOWED_HOSTS` reçoit le nom d'hôte sans `https://`, et `CSRF_TRUSTED_ORIGINS` l'origine complète, par exemple `https://mon-autoloc.onrender.com`.
+
+**Limites de l'offre gratuite :**
+
+- Le service Web se met en veille après une période d'inactivité ; le premier accès suivant peut prendre environ une minute. L'offre est destinée aux essais et démonstrations, pas à un service de production.
+- Le système de fichiers du service est éphémère. Les photos téléversées par le formulaire d'administration ne sont donc pas conservées après une veille, un redémarrage ou un redéploiement. Les images déjà incluses dans `static/`, comme la photo du hero, restent présentes car elles sont reconstruites à chaque déploiement.
+- PostgreSQL gratuit est limité (notamment à 1 Go) et expire 30 jours après sa création selon les conditions Render actuelles ; après expiration, il existe une période de grâce limitée avant suppression. Ne l'utilisez pas pour des données importantes sans sauvegarde.
+- Les quotas gratuits, disponibilités et conditions peuvent évoluer ; consultez les [limites de l'offre gratuite Render](https://render.com/docs/free) avant de déployer. Le Blueprint ne demande pas de disque persistant payant.
+
+Pour les comptes : l'application ne crée pas automatiquement un administrateur. Après le premier déploiement, créez un compte avec `python manage.py createsuperuser` dans un shell Render si votre service y a accès. Si le shell n'est pas disponible avec votre instance gratuite, consultez les options de shell et de connexion à PostgreSQL proposées actuellement par Render ; ne placez jamais un mot de passe administrateur dans le dépôt ou dans un fichier versionné. L'espace de gestion AutoLoc est sur `/gestion/` et l'interface Django de secours sur `/admin/`.
+
+Aucun déploiement n'est effectué par ce dépôt et aucun lien public n'est donc fourni.
 
 ## Données et sécurité
 
