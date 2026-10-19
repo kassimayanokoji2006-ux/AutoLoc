@@ -57,10 +57,10 @@ Le fichier [`render.yaml`](./render.yaml) sélectionne l'offre gratuite pour le 
 
 1. Envoyez le projet sur GitHub (`git add .`, `git commit -m "Prepare AutoLoc deployment"`, puis `git push`).
 2. Dans le tableau de bord Render, choisissez **New → Blueprint Instance**, reliez votre compte GitHub, sélectionnez le dépôt AutoLoc et appliquez le Blueprint trouvé dans `render.yaml`.
-3. Vérifiez avant de confirmer que Render propose bien les plans **Free** pour les deux services. Le Blueprint génère `SECRET_KEY`, définit `DEBUG=False`, configure les hôtes `autoloc.onrender.com`, relie `DATABASE_URL` à PostgreSQL et utilise `build.sh` pour installer les dépendances, collecter les fichiers statiques et appliquer les migrations. Gunicorn démarre l'application avec `gunicorn autoloc.wsgi:application`.
+3. Vérifiez avant de confirmer que Render propose bien les plans **Free** pour les deux services. Le Blueprint génère `SECRET_KEY`, définit `DEBUG=False`, relie `DATABASE_URL` à PostgreSQL et utilise `build.sh` pour installer les dépendances, collecter les fichiers statiques et appliquer les migrations. Gunicorn se lie au port fourni par Render avec `gunicorn autoloc.wsgi:application --bind 0.0.0.0:$PORT`. Django ajoute automatiquement le domaine Render externe à `ALLOWED_HOSTS` et à `CSRF_TRUSTED_ORIGINS`.
 4. Une fois le déploiement réussi, ouvrez l'URL `https://…onrender.com` affichée dans le tableau de bord.
 
-Les variables `ALLOWED_HOSTS` et `CSRF_TRUSTED_ORIGINS` du Blueprint ciblent `autoloc.onrender.com`. Si Render attribue un autre domaine, mettez ces deux valeurs à jour dans la configuration du service : `ALLOWED_HOSTS` reçoit le nom d'hôte sans `https://`, et `CSRF_TRUSTED_ORIGINS` l'origine complète, par exemple `https://mon-autoloc.onrender.com`.
+Si un domaine personnalisé est ajouté, renseignez aussi `ALLOWED_HOSTS` avec le nom d'hôte sans `https://`, et `CSRF_TRUSTED_ORIGINS` avec l'origine complète, par exemple `https://www.mon-autoloc.com`.
 
 **Limites de l'offre gratuite :**
 

@@ -15,6 +15,9 @@ ALLOWED_HOSTS = [
     for h in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1,testserver").split(",")
     if h.strip()
 ]
+_hote_render = os.environ.get("RENDER_EXTERNAL_HOSTNAME", "").strip()
+if _hote_render and _hote_render not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_hote_render)
 if not DEBUG and SECRET_KEY == "cle-locale-insecure-a-remplacer":
     raise ImproperlyConfigured("SECRET_KEY doit être défini lorsque DEBUG=False.")
 if not DEBUG and not ALLOWED_HOSTS:
@@ -106,6 +109,10 @@ CSRF_TRUSTED_ORIGINS = [
     for origine in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
     if origine.strip()
 ]
+if _hote_render:
+    _origine_render = f"https://{_hote_render}"
+    if _origine_render not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(_origine_render)
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
