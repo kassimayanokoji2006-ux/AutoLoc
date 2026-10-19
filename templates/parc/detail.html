@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titre %}{{ voiture.marq }} {{ voiture.modl }} — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="detail">
+  <a class="lien retour" href="{% url 'catalogue' %}">← Retour au catalogue</a>
+  <div class="detail-grille">
+    <div class="detail-photo">{% if voiture.image %}<img src="{{ voiture.image.url }}" alt="{{ voiture.marq }} {{ voiture.modl }}">{% else %}<div class="image-absence detail-absence"><span>Visuel à venir</span></div>{% endif %}</div>
+    <div class="detail-infos"><span class="badge badge-disponible">Disponible à la réservation</span><p class="categorie">{{ voiture.get_categ_display }} · {{ voiture.nb_places }} places</p><h1>{{ voiture.marq }} {{ voiture.modl }}</h1><p>{{ voiture.description|default:"Un véhicule confortable, prêt à vous accompagner sur la route." }}</p>
+      <dl class="specifications"><div><dt>Carburant</dt><dd>{{ voiture.get_carburant_display }}</dd></div><div><dt>Transmission</dt><dd>{{ voiture.get_transmission_display }}</dd></div></dl>
+      <p class="prix-detail"><strong>{{ voiture.prix_j }} Ar</strong> / jour</p>
+      {% if user.is_authenticated %}<button class="bouton bouton-discret favori-detail {% if est_favori %}actif{% endif %}" type="button" data-favori-url="{% url 'bascul_fav' voiture.pk %}" aria-label="{% if est_favori %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}" aria-pressed="{{ est_favori|yesno:'true,false' }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75A1.75 1.75 0 0 1 7.75 2h8.5A1.75 1.75 0 0 1 18 3.75V22l-6-3.8L6 22V3.75Zm2 0v14.6l4-2.5 4 2.5V4H8Z"/></svg><span>Favori</span></button>{% endif %}
+      {% if user.is_authenticated %}<a class="bouton bouton-principal bouton-grand" href="{% url 'creer_reserv' voiture.pk %}">Demander une réservation</a>
+      {% else %}<a class="bouton bouton-principal bouton-grand" href="{% url 'connexion' %}?next={% url 'creer_reserv' voiture.pk %}">Connectez-vous pour réserver</a>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

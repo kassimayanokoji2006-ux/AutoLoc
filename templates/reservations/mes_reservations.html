@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block titre %}Mes réservations — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="section"><div class="titre-page"><div><span class="surtitre">Votre espace</span><h1>Mes réservations</h1></div><a class="bouton bouton-principal" href="{% url 'catalogue' %}">Trouver une voiture</a></div>
+{% if reservations %}<div class="table-conteneur"><table><thead><tr><th>Voiture</th><th>Période</th><th>Jours</th><th>Total</th><th>Statut</th></tr></thead><tbody>{% for reserv in reservations %}<tr><td>{{ reserv.voiture }}</td><td>{{ reserv.dat_deb|date:"d/m/Y" }} — {{ reserv.dat_fin|date:"d/m/Y" }}</td><td>{{ reserv.nb_j }}</td><td>{{ reserv.mont_t }} Ar</td><td><span class="badge badge-disponible">{{ reserv.get_statut_display }}</span></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="etat-vide"><h3>Pas encore de réservation</h3><p>Votre prochaine aventure n'attend que vous.</p><a class="bouton bouton-principal" href="{% url 'catalogue' %}">Explorer le catalogue</a></div>{% endif %}
+</section>
+{% endblock %}

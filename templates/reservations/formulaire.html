@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block titre %}Réserver {{ voiture.marq }} {{ voiture.modl }} — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="formulaire-page"><div class="formulaire-carte"><span class="surtitre">Votre prochaine escapade</span><h1>Demander une réservation</h1><div class="resume-voiture"><strong>{{ voiture.marq }} {{ voiture.modl }}</strong><span>{{ voiture.prix_j }} Ar / jour</span></div>
+<form method="post" class="formulaire" data-reservation data-prix="{{ voiture.prix_j }}">{% csrf_token %}{% if form.non_field_errors %}<div class="erreurs">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="champ"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<p class="prix-apercu" aria-live="polite">Estimation : <strong data-prix-total>—</strong><small>Le montant définitif est calculé et vérifié par le serveur.</small></p><button class="bouton bouton-principal bouton-grand" type="submit">Envoyer ma demande</button></form></div></section>
+{% endblock %}

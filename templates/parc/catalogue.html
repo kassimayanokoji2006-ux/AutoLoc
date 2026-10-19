@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block titre %}Les voitures — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="catalogue">
+  <div class="titre-page"><div><span class="surtitre">Votre prochaine route</span><h1>Toutes les voitures</h1></div><p>Choisissez le véhicule qui vous accompagne.</p></div>
+  <div class="catalogue-barre">
+    <form class="recherche" method="get" action="{% url 'catalogue' %}">
+      <label class="sr-only" for="recherche">Rechercher une voiture</label><span aria-hidden="true">⌕</span><input id="recherche" type="search" name="q" value="{{ recherche }}" placeholder="Rechercher une voiture…">
+      <button type="submit" class="bouton bouton-principal">Rechercher</button>
+    </form>
+    <button class="bouton bouton-discret filtre-mobile" type="button" aria-expanded="false" aria-controls="panneau-filtres" data-filtres-bouton>Filtres</button>
+    <label class="tri">Trier par
+      <select name="tri" form="form-filtres">
+        <option value="">Recommandées</option><option value="prix_croissant" {% if tri == 'prix_croissant' %}selected{% endif %}>Prix croissant</option><option value="prix_decroissant" {% if tri == 'prix_decroissant' %}selected{% endif %}>Prix décroissant</option><option value="recentes" {% if tri == 'recentes' %}selected{% endif %}>Plus récentes</option>
+      </select>
+    </label>
+  </div>
+  <div class="catalogue-corps">
+    <aside class="filtres" id="panneau-filtres" data-filtres>
+      <div class="filtres-titre"><h2>Filtres</h2><a href="{% url 'catalogue' %}">Réinitialiser</a><button type="button" class="fermer-filtres" aria-label="Fermer les filtres" data-filtres-fermer>×</button></div>
+      <form id="form-filtres" method="get" action="{% url 'catalogue' %}">
+        <input type="hidden" name="q" value="{{ recherche }}">
+        <label class="filtre-ligne"><span>Catégorie</span></label>
+        <div class="boutons-categories">{% for cle, libelle in categories %}<label class="pastille-option"><input type="checkbox" name="categ" value="{{ cle }}" {% if cle in categories_selectionnees %}checked{% endif %}><span>{{ libelle }}</span></label>{% endfor %}</div>
+        <fieldset><legend>Marque</legend>{% for item in toutes_marques %}<label class="case-filtre"><input type="checkbox" name="marq" value="{{ item.marq }}" {% if item.marq in marques_selectionnees %}checked{% endif %}><span>{{ item.marq }}</span><small>{{ item.nombre }}</small></label>{% empty %}<p class="texte-doux">Aucune marque pour le moment.</p>{% endfor %}</fieldset>
+        <fieldset><legend>Carburant</legend>{% for cle, libelle in carburants %}<label class="case-filtre"><input type="checkbox" name="carburant" value="{{ cle }}" {% if cle in carburants_selectionnes %}checked{% endif %}><span>{{ libelle }}</span></label>{% endfor %}</fieldset>
+        <fieldset><legend>Transmission</legend>{% for cle, libelle in transmissions %}<label class="case-filtre"><input type="checkbox" name="transmission" value="{{ cle }}" {% if cle in transmissions_selectionnees %}checked{% endif %}><span>{{ libelle }}</span></label>{% endfor %}</fieldset>
+        <fieldset><legend>Prix journalier</legend><div class="prix-champs"><label>Min (Ar)<input type="number" name="prix_min" min="0" step="1" value="{{ prix_min }}" placeholder="0"></label><label>Max (Ar)<input type="number" name="prix_max" min="0" step="1" value="{{ prix_max }}" placeholder="—"></label></div></fieldset>
+        <label class="case-filtre filtre-favoris"><input type="checkbox" name="disponibles" value="1" {% if disponibles %}checked{% endif %}><span>Disponibles aujourd'hui</span></label>
+        <label class="case-filtre filtre-favoris"><input type="checkbox" name="favoris" value="1" {% if favoris_seuls %}checked{% endif %} {% if not user.is_authenticated %}disabled{% endif %}><span>Mes favoris</span></label>
+        <button class="bouton bouton-principal bouton-largeur" type="submit">Appliquer les filtres</button>
+      </form>
+    </aside>
+    <div class="resultats">
+      <div class="resultats-titre"><h2>{{ nombre_voitures }} voiture{{ nombre_voitures|pluralize:"s" }} trouvée{{ nombre_voitures|pluralize:"s" }}</h2></div>
+      {% if filtres_actifs %}<div class="filtres-actifs">{% for filtre in filtres_actifs %}<a class="filtre-chip" href="{{ filtre.url }}">{{ filtre.libelle }} <span aria-hidden="true">×</span></a>{% endfor %}<a class="effacer-filtres" href="{% url 'catalogue' %}">Tout effacer</a></div>{% endif %}
+      <div class="grille-voitures">
+        {% for voiture in voitures %}{% include "parc/carte.html" %}{% empty %}
+          <div class="etat-vide"><span class="etat-icone">⌕</span><h3>Aucune voiture ne correspond à votre recherche</h3><p>Essayez d'élargir vos critères ou réinitialisez les filtres.</p><a class="bouton bouton-principal" href="{% url 'catalogue' %}">Réinitialiser</a></div>
+        {% endfor %}
+      </div>
+      {% if page_obj.has_other_pages %}<nav class="pagination" aria-label="Pagination des voitures">
+        {% if page_obj.has_previous %}<a href="?{% if query_sans_page %}{{ query_sans_page }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">← Précédent</a>{% endif %}
+        <span>Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?{% if query_sans_page %}{{ query_sans_page }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Suivant →</a>{% endif %}
+      </nav>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

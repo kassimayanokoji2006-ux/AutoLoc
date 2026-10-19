@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block titre %}Ajouter une voiture — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="formulaire-page"><div class="formulaire-carte"><span class="surtitre">Espace de gestion</span><h1>Ajouter une voiture</h1><form method="post" enctype="multipart/form-data" class="formulaire">{% csrf_token %}{% for field in form %}<div class="champ"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<button class="bouton bouton-principal bouton-grand" type="submit">Enregistrer la voiture</button></form></div></section>
+{% endblock %}

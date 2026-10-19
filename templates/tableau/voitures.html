@@ -1,0 +1,18 @@
+{% extends "tableau/base_gestion.html" %}
+{% block titre %}Voitures — Gestion AutoLoc{% endblock %}
+{% block titre_page %}Voitures{% endblock %}
+{% block contenu %}
+<div class="gestion-page-titre"><div><span class="surtitre">PARC AUTOMOBILE</span><h1>Voitures</h1><p>Gérez les véhicules et leur disponibilité.</p></div><a class="bouton bouton-principal" href="{% url 'gestion_voiture_ajouter' %}">＋ Ajouter une voiture</a></div>
+<section class="gestion-panneau">
+  <form class="gestion-barre-outils" method="get">
+    <label class="gestion-recherche"><span aria-hidden="true">⌕</span><span class="sr-only">Rechercher</span><input type="search" name="q" value="{{ recherche }}" placeholder="Marque, modèle, immatriculation…"></label>
+    <label class="gestion-select"><span class="sr-only">État des voitures</span><select name="etat"><option value="actives" {% if etat == "actives" %}selected{% endif %}>Voitures actives</option><option value="archivees" {% if etat == "archivees" %}selected{% endif %}>?chivées</option><option value="toutes" {% if etat == "toutes" %}selected{% endif %}>Toutes</option></select></label>
+    <button class="bouton bouton-discret" type="submit">Filtrer</button>
+  </form>
+  <div class="gestion-table-conteneur"><table class="gestion-table"><thead><tr><th>Voiture</th><th>Immatriculation</th><th>Catégorie</th><th>Prix / jour</th><th>État</th><th>Actions</th></tr></thead><tbody>
+  {% for voiture in page_obj %}<tr><td><a class="gestion-identite" href="{% url 'gestion_voiture_detail' voiture.pk %}">{% if voiture.image %}<img src="{{ voiture.image.url }}" alt="" loading="lazy">{% else %}<span class="avatar-voiture">A</span>{% endif %}<span><strong>{{ voiture.marq }} {{ voiture.modl }}</strong><small>{{ voiture.nb_places }} places · {{ voiture.get_carburant_display }}</small></span></a></td><td>{{ voiture.immat }}</td><td>{{ voiture.get_categ_display }}</td><td><strong>{{ voiture.prix_j }} Ar</strong></td><td><span class="statut-pilule {% if voiture.active %}statut-active{% else %}statut-archivee{% endif %}">{% if voiture.active %}Active{% else %}?chivée{% endif %}</span></td><td><div class="gestion-actions"><a class="action-icone" href="{% url 'gestion_voiture_modifier' voiture.pk %}" aria-label="Modifier {{ voiture }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 16.5 10.7-10.7 3.5 3.5L7.5 20H4v-3.5Zm12-12 1.4-1.4a2 2 0 0 1 2.8 0l.7.7a2 2 0 0 1 0 2.8l-1.4 1.4L16 4.5Z"/></svg></a><form method="post" action="{% url 'gestion_voiture_etat' voiture.pk %}" data-confirm="{% if voiture.active %}?chiver cette voiture ? Son historique sera conservé.{% else %}Réactiver cette voiture ?{% endif %}">{% csrf_token %}<button class="action-icone" type="submit" aria-label="{% if voiture.active %}?chiver{% else %}Réactiver{% endif %} {{ voiture }}">{% if voiture.active %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v2H4V7Zm2 3h12v10H6V10Zm3-6h6l1 2H8l1-2Z"/></svg>{% else %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 8.5 12h-2.2A7 7 0 1 1 12 5a6.9 6.9 0 0 1 4.9 2H13v2h7V2h-2v3.1A8.9 8.9 0 0 0 12 3Zm-1 5v5l4 2.4 1-1.7-3-1.8V8h-2Z"/></svg>{% endif %}</button></form></div></td></tr>
+  {% empty %}<tr><td colspan="6"><div class="gestion-vide"><strong>Aucune voiture trouvée</strong><p>Essayez une autre recherche ou ajoutez un véhicule au parc.</p><a class="bouton bouton-principal" href="{% url 'gestion_voiture_ajouter' %}">Ajouter une voiture</a></div></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% include "tableau/pagination.html" %}
+</section>
+{% endblock %}

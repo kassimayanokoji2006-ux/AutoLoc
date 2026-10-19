@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block titre %}Connexion — AutoLoc{% endblock %}
+{% block contenu %}
+<section class="formulaire-page"><div class="formulaire-carte"><span class="surtitre">Heureux de vous revoir</span><h1>Connexion</h1><form method="post" class="formulaire">{% csrf_token %}{% if form.non_field_errors %}<div class="erreurs">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="champ"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<input type="hidden" name="next" value="{{ next }}"><button class="bouton bouton-principal bouton-grand" type="submit">Se connecter</button></form><p class="formulaire-aide">Pas encore de compte ? <a href="{% url 'inscription' %}">Créer un compte</a></p></div></section>
+{% endblock %}

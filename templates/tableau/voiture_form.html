@@ -1,0 +1,22 @@
+{% extends "tableau/base_gestion.html" %}
+{% block titre %}{% if voiture %}Modifier {{ voiture }}{% else %}Ajouter une voiture{% endif %} — AutoLoc{% endblock %}
+{% block titre_page %}{% if voiture %}Modifier une voiture{% else %}Nouvelle voiture{% endif %}{% endblock %}
+{% block contenu %}
+<div class="gestion-page-titre"><div><span class="surtitre">PARC AUTOMOBILE</span><h1>{% if voiture %}Modifier {{ voiture }}{% else %}Ajouter une voiture{% endif %}</h1><p>Renseignez les informations qui apparaîtront dans le catalogue.</p></div><a class="bouton bouton-discret" href="{% if voiture %}{% url 'gestion_voiture_detail' voiture.pk %}{% else %}{% url 'gestion_voitures' %}{% endif %}">← Retour</a></div>
+<form class="gestion-formulaire-layout" method="post" enctype="multipart/form-data" data-image-form>
+  {% csrf_token %}
+  <section class="gestion-panneau gestion-formulaire">
+    {% if form.non_field_errors %}<div class="gestion-erreurs">{{ form.non_field_errors }}</div>{% endif %}
+    <div class="gestion-form-grille">
+      {% for field in form %}
+      <div class="gestion-champ {% if field.name == 'description' %}champ-large{% endif %} {% if field.field.widget.input_type == 'checkbox' %}champ-case{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}<label class="case-ligne" for="{{ field.id_for_label }}">{{ field }}<span>{{ field.label }}</span></label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}
+        {% if field.help_text %}<small class="aide-champ">{{ field.help_text }}</small>{% endif %}{{ field.errors }}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="gestion-form-actions"><a class="bouton bouton-discret" href="{% if voiture %}{% url 'gestion_voiture_detail' voiture.pk %}{% else %}{% url 'gestion_voitures' %}{% endif %}">Annuler</a><button class="bouton bouton-principal" type="submit">Enregistrer</button></div>
+  </section>
+  <aside class="gestion-panneau apercu-image"><h2>Photo du véhicule</h2><p>L’image est facultative et ne peut dépasser 5 Mo.</p><div class="apercu-image-cadre" data-image-cadre>{% if voiture and voiture.image %}<img src="{{ voiture.image.url }}" alt="Aperçu de {{ voiture }}">{% else %}<div class="image-absence" aria-hidden="true"><span>Aperçu de l’image</span></div>{% endif %}</div><label class="bouton bouton-discret televerser-bouton" for="{{ form.image.id_for_label }}">Choisir une image</label>{{ form.image.errors }}</aside>
+</form>
+{% endblock %}

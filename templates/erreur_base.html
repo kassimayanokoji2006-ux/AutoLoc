@@ -1,0 +1,2 @@
+{% extends "base.html" %}
+{% block contenu %}<section class="etat-erreur"><span>{% block code_erreur %}AutoLoc{% endblock %}</span><h1>{% block titre_erreur %}Une erreur est survenue{% endblock %}</h1><p>{% block texte_erreur %}{% endblock %}</p><a class="bouton bouton-principal" href="{% url 'accueil' %}">Retour à l’accueil</a>{% if request.user.is_staff %}<a class="lien" href="{% url 'tableau' %}">Ouvrir l’espace de gestion</a>{% endif %}</section>{% endblock %}

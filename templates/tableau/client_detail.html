@@ -1,0 +1,8 @@
+{% extends "tableau/base_gestion.html" %}
+{% block titre %}Dossier client — Gestion AutoLoc{% endblock %}
+{% block titre_page %}Dossier client{% endblock %}
+{% block contenu %}
+<div class="gestion-page-titre"><div><span class="surtitre">DOSSIER CLIENT</span><h1>{{ client.utilisateur.get_full_name|default:client.utilisateur.username }}</h1><p>Inscrit sous le nom {{ client.utilisateur.username }}.</p></div><a class="bouton bouton-discret" href="{% url 'gestion_clients' %}">← Clients</a></div>
+<div class="gestion-detail-grille"><section class="gestion-panneau"><h2>Coordonnées</h2><dl class="gestion-caracteristiques fiche-client"><div><dt>Prénom</dt><dd>{{ client.utilisateur.first_name|default:"—" }}</dd></div><div><dt>Nom</dt><dd>{{ client.utilisateur.last_name|default:"—" }}</dd></div><div><dt>Adresse électronique</dt><dd>{{ client.utilisateur.email|default:"—" }}</dd></div><div><dt>Téléphone</dt><dd>{{ client.telephone|default:"—" }}</dd></div><div class="champ-large"><dt>Adresse</dt><dd>{{ client.adresse|default:"—" }}</dd></div></dl></section>
+<section class="gestion-panneau"><div class="gestion-panneau-entete"><div><span class="surtitre">HISTORIQUE</span><h2>Réservations</h2></div><span class="badge-compteur">{{ reservations|length }}</span></div>{% for reserv in reservations %}<a class="gestion-ligne-historique" href="{% url 'gestion_reservation_detail' reserv.pk %}"><span><strong>{{ reserv.voiture }}</strong><small>{{ reserv.dat_deb|date:"d/m/Y" }} — {{ reserv.dat_fin|date:"d/m/Y" }} · {{ reserv.mont_t }} Ar</small></span><span class="statut-pilule statut-{{ reserv.statut }}">{{ reserv.get_statut_display }}</span></a>{% empty %}<div class="gestion-vide">Ce client n’a pas encore de réservation.</div>{% endfor %}</section></div>
+{% endblock %}

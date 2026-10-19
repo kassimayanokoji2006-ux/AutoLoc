@@ -1,0 +1,17 @@
+<article class="carte-voiture">
+  <div class="carte-visuel">
+    <a href="{% url 'detail_voiture' voiture.pk %}" aria-label="Voir {{ voiture.marq }} {{ voiture.modl }}">
+      {% if voiture.image %}<img src="{{ voiture.image.url }}" alt="{{ voiture.marq }} {{ voiture.modl }}">{% else %}
+        <div class="image-absence" aria-hidden="true"><svg viewBox="0 0 180 90"><path d="m18 58 12-25c4-8 10-12 19-13l31-2 19-17c4-4 9-6 15-6h40c8 0 15 4 19 12l16 38 9 5c5 3 8 8 8 14v10H10v-9c0-3 3-6 8-7Zm45-27-8 19h36V23l-26 2c-1 0-2 1-2 1Zm37 19h67l-15-33c-2-3-4-5-8-5h-40c-2 0-4 1-6 3L100 29v21ZM43 68a13 13 0 1 0 0 26 13 13 0 0 0 0-26Zm110 0a13 13 0 1 0 0 26 13 13 0 0 0 0-26Z"/></svg><span>Visuel à venir</span></div>
+      {% endif %}
+    </a>
+    {% if user.is_authenticated %}
+      <button class="favori-bouton {% if voiture.pk in voitures_favorites %}actif{% endif %}" type="button" data-favori-url="{% url 'bascul_fav' voiture.pk %}" aria-label="{% if voiture.pk in voitures_favorites %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}" aria-pressed="{% if voiture.pk in voitures_favorites %}true{% else %}false{% endif %}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75A1.75 1.75 0 0 1 7.75 2h8.5A1.75 1.75 0 0 1 18 3.75V22l-6-3.8L6 22V3.75Zm2 0v14.6l4-2.5 4 2.5V4H8Z"/></svg></button>
+    {% endif %}
+  </div>
+  <div class="carte-infos">
+    <div><p class="categorie">{{ voiture.get_categ_display }} · {{ voiture.nb_places }} places</p><h3><a href="{% url 'detail_voiture' voiture.pk %}">{{ voiture.marq }} {{ voiture.modl }}</a></h3></div>
+    <span class="badge badge-disponible">Disponible</span>
+  </div>
+  <div class="carte-bas"><span>{{ voiture.get_carburant_display }} · {{ voiture.get_transmission_display }}</span><strong>{{ voiture.prix_j }} Ar<small> / jour</small></strong></div>
+</article>

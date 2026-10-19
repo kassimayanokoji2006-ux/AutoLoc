@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titre %}AutoLoc — la route à votre rythme{% endblock %}
+{% block contenu %}
+<section class="hero">
+  <div class="hero-contenu">
+    <span class="surtitre">Votre prochaine escapade commence ici</span>
+    <h1>La bonne voiture.<br>Le bon moment.</h1>
+    <p>Découvrez un parc de véhicules sélectionnés et réservez en quelques instants.</p>
+    <a class="bouton bouton-principal bouton-grand" href="{% url 'catalogue' %}">Explorer les voitures <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="hero-visuel">
+    <img src="{% static 'img/hero.jpg' %}" alt="Voiture noire de location mise en valeur sur fond sombre" width="736" height="414" loading="eager">
+  </div>
+</section>
+<section class="section">
+  <div class="section-entete"><div><span class="surtitre">Une sélection pour vous</span><h2>Partez à la découverte</h2></div><a class="lien" href="{% url 'catalogue' %}">Voir tout le parc <span aria-hidden="true">→</span></a></div>
+  <div class="grille-voitures">
+    {% for voiture in voitures %}{% include "parc/carte.html" %}{% empty %}
+      <div class="etat-vide"><span class="etat-icone">⌕</span><h3>Votre prochaine voiture arrive bientôt</h3><p>Le parc est en cours de préparation. Revenez découvrir nos véhicules.</p></div>
+    {% endfor %}
+  </div>
+</section>
+<section class="bandeau">
+  <div><span class="surtitre">Simple, clair, sans détour</span><h2>Un trajet qui vous ressemble.</h2><p>Choisissez vos dates, demandez votre réservation et suivez son statut depuis votre compte.</p></div>
+  <a class="bouton bouton-principal" href="{% url 'catalogue' %}">Trouver ma voiture</a>
+</section>
+{% endblock %}
