@@ -303,7 +303,8 @@ tbody tr:last-child td { border-bottom: 0; }
   .carte-visuel, .resultats .carte-visuel { height: 195px; }
   .carte-infos { align-items: center; flex-direction: row; }
   .carte-bas { align-items: center; flex-direction: row; }
-  .actions-entete .bouton-discret { display: none; }
+  .actions-entete { flex-wrap: wrap; justify-content: flex-end; }
+  .actions-entete .bouton-discret { display: inline-flex; }
   .titre-page p { line-height: 1.5; }
   .tri { width: 100%; margin-left: 0; }
   .tri select { flex: 1; max-width: none; }
