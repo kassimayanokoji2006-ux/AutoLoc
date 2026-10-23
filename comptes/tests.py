@@ -18,6 +18,7 @@ class InitialiserGestionnaireTests(TestCase):
             "AUTOLOC_ADMIN_USERNAME",
             "AUTOLOC_ADMIN_EMAIL",
             "AUTOLOC_ADMIN_PASSWORD",
+            "AUTOLOC_ADMIN_RESET_PASSWORD",
         ):
             os.environ.pop(cle, None)
         self.addCleanup(self.environnement.stop)
@@ -32,6 +33,11 @@ class InitialiserGestionnaireTests(TestCase):
         )
 
     def test_commande_sans_variables_ne_cree_pas_de_compte(self):
+        call_command("initialiser_gestionnaire", stdout=StringIO())
+        self.assertFalse(Utilisateur.objects.exists())
+
+    def test_commande_ignore_le_drapeau_desactive_sans_identifiants(self):
+        os.environ["AUTOLOC_ADMIN_RESET_PASSWORD"] = "false"
         call_command("initialiser_gestionnaire", stdout=StringIO())
         self.assertFalse(Utilisateur.objects.exists())
 
@@ -67,5 +73,40 @@ class InitialiserGestionnaireTests(TestCase):
         )
         self.configurer_identifiants()
         with self.assertRaises(CommandError):
-            call_command("initialiser_gestionnaire", stdout=open(os.devnull, "w"))
+            call_command("initialiser_gestionnaire", stdout=StringIO())
         self.assertFalse(Utilisateur.objects.get(username="gestion").is_superuser)
+
+    def test_commande_reinitialise_seulement_si_explicitement_activee(self):
+        utilisateur = Utilisateur.objects.create_superuser(
+            username="gestion",
+            email="gestion@example.test",
+            password="AncienMotDePasse!2026",
+        )
+        self.configurer_identifiants()
+
+        call_command("initialiser_gestionnaire", stdout=StringIO())
+        utilisateur.refresh_from_db()
+        self.assertTrue(utilisateur.check_password("AncienMotDePasse!2026"))
+
+        os.environ["AUTOLOC_ADMIN_RESET_PASSWORD"] = "true"
+        call_command("initialiser_gestionnaire", stdout=StringIO())
+        utilisateur.refresh_from_db()
+        self.assertTrue(utilisateur.check_password("MotDePasseLong!EtUnique2026"))
+        self.assertFalse(utilisateur.check_password("AncienMotDePasse!2026"))
+
+    def test_reinitialisation_refuse_un_compte_absent(self):
+        self.configurer_identifiants()
+        os.environ["AUTOLOC_ADMIN_RESET_PASSWORD"] = "true"
+        with self.assertRaises(CommandError):
+            call_command("initialiser_gestionnaire", stdout=StringIO())
+
+    def test_reinitialisation_refuse_un_mot_de_passe_absent(self):
+        Utilisateur.objects.create_superuser(
+            username="gestion",
+            email="gestion@example.test",
+            password="AncienMotDePasse!2026",
+        )
+        os.environ["AUTOLOC_ADMIN_USERNAME"] = "gestion"
+        os.environ["AUTOLOC_ADMIN_RESET_PASSWORD"] = "true"
+        with self.assertRaises(CommandError):
+            call_command("initialiser_gestionnaire", stdout=StringIO())

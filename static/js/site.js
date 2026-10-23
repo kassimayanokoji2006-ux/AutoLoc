@@ -3,10 +3,23 @@
 
   const menuBtn = document.querySelector("[data-menu-bouton]");
   const menu = document.querySelector("[data-menu]");
+  const fermerMenu = () => {
+    if (!menu || !menuBtn) return;
+    menu.classList.remove("ouvert");
+    menuBtn.setAttribute("aria-expanded", "false");
+  };
   if (menuBtn && menu) {
     menuBtn.addEventListener("click", () => {
       const ouvert = menu.classList.toggle("ouvert");
       menuBtn.setAttribute("aria-expanded", String(ouvert));
+    });
+    document.addEventListener("click", (event) => {
+      const clicDansMenu = menu.contains(event.target);
+      const clicSurBouton = menuBtn.contains(event.target);
+      if (!clicDansMenu && !clicSurBouton) fermerMenu();
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 760) fermerMenu();
     });
   }
 

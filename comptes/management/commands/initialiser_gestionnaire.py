@@ -12,8 +12,17 @@ class Command(BaseCommand):
         nom = os.environ.get("AUTOLOC_ADMIN_USERNAME", "").strip()
         email = os.environ.get("AUTOLOC_ADMIN_EMAIL", "").strip()
         mot_de_passe = os.environ.get("AUTOLOC_ADMIN_PASSWORD", "")
+        reinitialiser = os.environ.get("AUTOLOC_ADMIN_RESET_PASSWORD", "").strip().lower()
 
-        if not any((nom, email, mot_de_passe)):
+        valeurs_vraies = {"1", "true"}
+        valeurs_fausses = {"", "0", "false"}
+        if reinitialiser not in valeurs_vraies | valeurs_fausses:
+            raise CommandError(
+                "AUTOLOC_ADMIN_RESET_PASSWORD doit valoir true, false, 1 ou 0."
+            )
+        reinitialisation_active = reinitialiser in valeurs_vraies
+
+        if not any((nom, email, mot_de_passe)) and not reinitialisation_active:
             self.stdout.write(
                 "Création du gestionnaire ignorée : variables AUTOLOC_ADMIN_* absentes."
             )
@@ -32,12 +41,32 @@ class Command(BaseCommand):
                         "Le nom AUTOLOC_ADMIN_USERNAME existe déjà pour un compte "
                         "qui n'est pas superutilisateur. Choisissez un autre nom."
                     )
+                if reinitialisation_active:
+                    if not mot_de_passe:
+                        raise CommandError(
+                            "AUTOLOC_ADMIN_PASSWORD est requis pour réinitialiser "
+                            "le mot de passe."
+                        )
+                    utilisateur.set_password(mot_de_passe)
+                    utilisateur.save(update_fields=["password"])
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            "Le mot de passe du gestionnaire a été réinitialisé."
+                        )
+                    )
+                    return
                 self.stdout.write(
                     self.style.SUCCESS(
                         "Le gestionnaire existe déjà ; aucun changement effectué."
                     )
                 )
                 return
+
+            if reinitialisation_active:
+                raise CommandError(
+                    "La réinitialisation est activée, mais aucun superutilisateur "
+                    "avec AUTOLOC_ADMIN_USERNAME n'existe."
+                )
 
             if not email or not mot_de_passe:
                 raise CommandError(

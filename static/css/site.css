@@ -59,6 +59,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .actions-entete { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 .actions-entete form { margin: 0; }
 .salutation { color: #d1d3d8; font-size: 13px; }
+.icone-bouton {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #414249;
+  border-radius: 11px;
+  color: white;
+  background: transparent;
+  cursor: pointer;
+}
 .menu-mobile { display: none !important; }
 .bouton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; padding: 0 17px; border: 1px solid transparent; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: transform .18s, background .18s, box-shadow .18s; }
 .bouton:hover { transform: translateY(-1px); }
@@ -244,10 +253,11 @@ tbody tr:last-child td { border-bottom: 0; }
   .menu-mobile { display: inline-grid !important; width: 37px; min-width: 37px; height: 37px; padding: 0; color: white !important; border-color: #414249 !important; background: transparent !important; }
   .marque-site { gap: 7px; font-size: 17px; }
   .logo-voiture { width: 33px; height: 33px; }
-  .nav-principale { position: absolute; top: calc(100% + 8px); right: 0; left: 0; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px; border: 1px solid #33343b; border-radius: 14px; background: var(--fond-entete); box-shadow: var(--ombre); }
+  .nav-principale { position: absolute; z-index: 15; top: calc(100% + 8px); right: 0; left: 0; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px; border: 1px solid #33343b; border-radius: 14px; background: var(--fond-entete); box-shadow: var(--ombre); }
   .nav-principale.ouvert { display: flex; }
   .nav-principale a { padding: 13px; border-radius: 9px; }
   .nav-principale a:hover { background: #25262b; }
+  .actions-entete { position: relative; z-index: 1; }
   .actions-entete { gap: 6px; }
   .actions-entete .bouton { min-height: 36px; padding: 0 9px; border-radius: 9px; font-size: 11px; }
   .actions-entete form .bouton { font-size: 0; }
@@ -459,9 +469,10 @@ body.tiroir-ouvert { overflow: hidden; }
   .gestion-detail-grille { grid-template-columns: minmax(0,1fr); }
 }
 @media (max-width: 760px) {
-  .gestion-sidebar { z-index: 20; visibility: hidden; width: min(290px, 86vw); transform: translateX(-105%); transition: transform .22s ease, visibility .22s step-end; box-shadow: 12px 0 30px rgba(0,0,0,.16); }
-  .gestion-sidebar.ouvert { visibility: visible; transform: translateX(0); transition: transform .22s ease, visibility 0s; }
-  .gestion-voile.ouvert { position: fixed; z-index: 19; inset: 0; display: block; width: 100%; height: 100%; border: 0; background: rgba(17,18,20,.45); }
+  .gestion-sidebar { z-index: 20; visibility: hidden; width: min(290px, 86vw); transform: translateX(-105%); opacity: 0; pointer-events: none; transition: transform .22s ease, opacity .22s ease, visibility .22s step-end; box-shadow: 12px 0 30px rgba(0,0,0,.16); }
+  .gestion-sidebar.ouvert { visibility: visible; opacity: 1; pointer-events: auto; transform: translateX(0); transition: transform .22s ease, opacity .22s ease, visibility 0s; }
+  .gestion-voile { display: none; opacity: 0; }
+  .gestion-voile.ouvert { position: fixed; z-index: 19; inset: 0; display: block; width: 100%; height: 100%; border: 0; background: rgba(17,18,20,.45); opacity: 1; }
   .gestion-zone { margin-left: 0; }
   .gestion-entete { min-height: 67px; margin: 9px 12px 0; padding: 10px 14px; }
   .gestion-burger { display: grid; flex: 0 0 auto; }

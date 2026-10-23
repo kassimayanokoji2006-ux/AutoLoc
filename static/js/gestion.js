@@ -21,10 +21,21 @@
       if (ouvert) nav.querySelector("a")?.focus();
     });
     voile.addEventListener("click", fermerNav);
+    document.addEventListener("click", (event) => {
+      const clicDansNav = nav.contains(event.target);
+      const clicSurBouton = navBouton.contains(event.target);
+      const clicSurVoile = voile.contains(event.target);
+      if (nav.classList.contains("ouvert") && !clicDansNav && !clicSurBouton && !clicSurVoile) {
+        fermerNav();
+      }
+    });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && nav.classList.contains("ouvert")) {
         fermerNav();
       }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 760) fermerNav();
     });
   }
 
